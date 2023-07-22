@@ -53,6 +53,9 @@ def parse_config(config_path):
     config['confidence'] = float(configparser['GMM']['CONFIDENCE'])
     config['theta1'] = float(configparser['SIGNATURE']['USING_WORD_THETA'])
     config['theta2'] = float(float(configparser['SIGNATURE']['SIGNATURE_CANDIDATE_THETA']))
+    config['min_len'] = int(configparser['SIGNATURE']['MIN_LENGTH'])
+    config['using_word'] = configparser.getboolean('SIGNATURE', 'USING_WORD')
+
     return config
 
 
@@ -60,3 +63,18 @@ def rename_folder(save_name, config):
     if os.path.exists(rf"{config['save_dir']}\{save_name}"):
         save_name = save_name + str(format_date(6))
     os.rename(config['save_path'], rf"{config['save_dir']}\{save_name}")
+
+
+def make_sig(list_str):
+    tmp = list_str.split(' ')
+    return [i for i in tmp]
+
+
+def process_port(port):
+    port = int(port)
+    if port < 1024:
+        return 0
+    elif port < 49151:
+        return 1
+    else:
+        return 2
