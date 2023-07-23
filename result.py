@@ -3,6 +3,7 @@ import csv
 import numpy as np
 from suffix_tree import Tree
 
+
 def save_config(config):
     with open(rf"{config['save_path']}\config.txt", 'w', newline='', encoding='utf-8') as f:
         f.write(f'Dataset : {config["data_name"]}\n')
@@ -11,7 +12,8 @@ def save_config(config):
         f.write(f'GMM only_benign : {config["only_benign"]}\n')
         f.write(f'GMM confidence : {config["confidence"]}\n')
         f.write(f'Theta 1 : {config["theta1"]}\n')
-        f.write(f'Theta 2 : {config["theta2"]}')
+        f.write(f'Theta 2 : {config["theta2"]}\n')
+        f.write(f'Min Length : {config["min_len"]}')
 
 
 def save_confusion(detect_ip_dict, test_pattern_dict, config):

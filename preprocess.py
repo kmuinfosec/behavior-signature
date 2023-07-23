@@ -81,7 +81,7 @@ def make_pattern_dict(key_list, data_list, using_port=False):
 
 
 def load_data(config, phase):
-    if config[f'{phase}_preprocess'] is None:
+    if config[f'{phase}_preprocess'] == '':
         b_flow(config, phase)
         with open(rf'{config["save_path"]}\{phase}_feature.pkl', 'rb') as f:
             data_raw = pickle.load(f)

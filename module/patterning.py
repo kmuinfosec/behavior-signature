@@ -17,6 +17,7 @@ class GMM_Pattering:
         self.confidence = 0
         self.random_seed = random_seed
         self.num_data = 0
+        self.confi_dict = {}
 
     def fit(self, data):
         self.num_data = len(data)
@@ -35,6 +36,7 @@ class GMM_Pattering:
                                       covariance_type=self.covariance_type, reg_covar=self.reg_covar, tol=self.tol)
             tmp_vgm.fit(tmp_data)
             self.models.append(tmp_vgm)
+            self.confi_dict[idx] = {}
 
     def transform(self, data, confidence=2.58):
         self.confidence = confidence
