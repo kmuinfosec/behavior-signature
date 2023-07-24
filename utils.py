@@ -71,7 +71,7 @@ def make_sig(list_str):
 
 
 def process_port(port):
-    port = int(port)
+    port = int(float(port))
     if port < 1024:
         return 0
     elif port < 49151:

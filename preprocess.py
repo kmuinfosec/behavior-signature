@@ -28,6 +28,8 @@ def b_flow(config, phase='train'):
             for tmp_flow in tqdm(f.readlines()):
                 flow = tmp_flow.strip().split(',')
                 ts = flow[column_index['first']]
+                if flow[column_index['prot']] != '6' and flow[column_index['prot']] != '17':
+                    continue
                 sa, da = flow[column_index['source']], flow[column_index['destination']]
                 if sa not in mal_ip and da not in mal_ip:
                     ben_idx.append(index)
@@ -98,6 +100,10 @@ def load_data(config, phase):
 
 
 def make_using_word(train_pattern_dict, config):
+    if config['theta1'] < 1:
+        th = len(config['target_ip']) * config['theta']
+    else:
+        th = config['theta1']
     using_word = set()
     target_words = []
     for idx, ip in enumerate(tqdm(config['target_ip'])):
@@ -105,7 +111,7 @@ def make_using_word(train_pattern_dict, config):
 
     word_count_dict = dict(Counter(target_words))
     for word in word_count_dict:
-        if word_count_dict[word] >= len(config['target_ip']) * config['theta1']:
+        if word_count_dict[word] >= th:
             using_word.add(word)
     return using_word
 

@@ -3,6 +3,7 @@ import ahocorasick
 from suffix_tree import Tree
 from tqdm.auto import tqdm
 from module.suffixTree import SuffixTree
+from utils import make_sig
 
 
 def erase_signature(cand_sig, ip_pattern_dict, target_ip):
@@ -57,11 +58,21 @@ def erase_signature(cand_sig, ip_pattern_dict, target_ip):
 
 
 def generate_signature(train_pattern_dict, config):
-    signature_candidate = set(
-        SuffixTree([train_pattern_dict[ip] for ip in config['target_ip']]).get_frequency(k=config['min_len'],
-                                                                                         th=len(
-                                                                                             config['target_ip']) *
-                                                                                            config['theta2']).keys())
+
+    signature_candidate = []
+    tree = Tree()
+    for i, ip in enumerate(config['target_ip']):
+        tree.add(ip, train_pattern_dict[ip])
+    for C, path in sorted(tree.maximal_repeats()):
+        if C >= len(config['target_ip']) * config['theta2'] and len(str(path).split(' ')) > config['min_len']:
+            # print(C, path)
+            signature_candidate.append(make_sig(str(path)))
+
+    # signature_candidate = set(
+    #     SuffixTree([train_pattern_dict[ip] for ip in config['target_ip']]).get_frequency(k=config['min_len'],
+    #                                                                                      th=len(
+    #                                                                                          config['target_ip']) *
+    #                                                                                         config['theta2']).keys())
     print("\nSignature Candidate Count :", len(signature_candidate))
     print("============ Delete WhiteList Signature ============")
     confirm_sig = erase_signature(list(signature_candidate), train_pattern_dict, config['target_ip'])

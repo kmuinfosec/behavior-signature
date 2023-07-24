@@ -16,13 +16,19 @@ class Node:
 
 class SuffixTree:
     def __init__(self, l):
+        self.current_len = 0
         self.nodes = [Node()]
-        for idx, str in tqdm(enumerate(l), total=len(l)):
-            for i in range(len(str) - 1, -1, -1):
-                target = str[i:]
-                self.addSuffix(target, idx)
+        for input_data in tqdm(l, total=len(l)):
+            self.add(input_data)
 
-    def addSuffix(self, suf, idx):
+    def add(self, input_data):
+        for i in range(len(input_data) - 1, -1, -1):
+            target = input_data[i:]
+            self._addSuffix(target)
+        self.current_len += 1
+
+    def _addSuffix(self, suf):
+        idx = self.current_len
         n = 0
         i = 0
         while i < len(suf):

@@ -14,6 +14,18 @@ def save_config(config):
         f.write(f'Theta 1 : {config["theta1"]}\n')
         f.write(f'Theta 2 : {config["theta2"]}\n')
         f.write(f'Min Length : {config["min_len"]}')
+        f.write(f'\nDATA PATH\n')
+        if config['train_preprocess']:
+            f.write(f'Train Preprocessed by {config["train_preprocess"]}')
+        else:
+            f.write(f'Train Path : {config["train_data_list"]}')
+        if config['test_preprocess']:
+            f.write(f'Test Preprocessed by {config["test_preprocess"]}')
+        else:
+            f.write(f'Test Path : {config["test_data_list"]}')
+        if config['gmm_preprocess']:
+            f.write(f'GMM Preprocessed by {config["gmm_preprocess"]}')
+
 
 
 def save_confusion(detect_ip_dict, test_pattern_dict, config):

@@ -16,11 +16,9 @@ class GMM_Pattering:
         self.models = []
         self.confidence = 0
         self.random_seed = random_seed
-        self.num_data = 0
-        self.confi_dict = {}
+        self.table = {}
 
     def fit(self, data):
-        self.num_data = len(data)
         np_data = np.array(data)
         print("Model Fitting...")
         for idx in tqdm(range(len(data[0]))):
@@ -36,7 +34,12 @@ class GMM_Pattering:
                                       covariance_type=self.covariance_type, reg_covar=self.reg_covar, tol=self.tol)
             tmp_vgm.fit(tmp_data)
             self.models.append(tmp_vgm)
-            self.confi_dict[idx] = {}
+            if self.covariance_type == 'full':
+                self.table[idx] = {i: {"mean": tmp_vgm.means_[i][0], "std": tmp_vgm.covariances_[i][0][0] ** 0.5} for i
+                                   in range(self.n_components)}
+            elif self.covariance_type == 'spherical':
+                self.table[idx] = {i: {"mean": tmp_vgm.means_[i][0], "std": tmp_vgm.covariances_[i] ** 0.5} for i in
+                                   range(self.n_components)}
 
     def transform(self, data, confidence=2.58):
         self.confidence = confidence
@@ -52,17 +55,11 @@ class GMM_Pattering:
             pred = self.models[idx].predict(tmp_data).astype('<U12')
             for p_idx in range(len(pred)):
                 tmp_pred = int(pred[p_idx])
-                tmp_mean = self.models[idx].means_[tmp_pred][0]
-                #                 sqrt_n_count = self.models[idx].weights_[tmp_pred] * self.num_data ** 0.5
-                if self.covariance_type == 'full':
-                    tmp_std = self.models[idx].covariances_[tmp_pred][0][0] ** 0.5
-                elif self.covariance_type == 'spherical':
-                    tmp_std = self.models[idx].covariances_[tmp_pred] ** 0.5
+                tmp_mean = self.table[idx][tmp_pred]['mean']
+                tmp_std = self.table[idx][tmp_pred]['std']
                 tmp_pred = chr(tmp_pred + 65)
-                #                 if tmp_mean - (self.confidence * tmp_std / sqrt_n_count) > tmp_data[p_idx]:
                 if tmp_mean - (self.confidence * tmp_std) > tmp_data[p_idx]:
                     pred[p_idx] = f'-{tmp_pred}'
-                #                 elif tmp_data[p_idx] > tmp_mean + (self.confidence * tmp_std / sqrt_n_count):
                 elif tmp_data[p_idx] > tmp_mean + (self.confidence * tmp_std):
                     pred[p_idx] = f'+{tmp_pred}'
                 else:
